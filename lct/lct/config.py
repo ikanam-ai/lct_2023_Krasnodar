@@ -33,6 +33,8 @@ class Config:
         self.MONGO_PASSWORD: str = os.environ.get("MONGO_PASSWORD")
         self.NOTIF_PSWD: str = os.environ.get("NOTIF_PSWD")
         self.NOTIF_URL: str = os.environ.get("NOTIF_URL")
+        self.USER_LOGIN: str = os.environ.get("USER_LOGIN")
+        self.USER_PASSWORD: str = os.environ.get("USER_PASSWORD")
 
         self.__initialized: bool = True
 

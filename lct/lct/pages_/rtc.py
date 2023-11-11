@@ -2,6 +2,7 @@ import cv2
 import streamlit as st
 import streamlit_antd_components as sac
 from streamlit.runtime.uploaded_file_manager import UploadedFile
+from send import send_urls_to_queue
 
 
 def get_urls_from_file() -> list[str] | None:
@@ -19,15 +20,19 @@ def get_urls_from_text() -> list[str] | None:
 def check_urls(urls: list[str]) -> list[str]:
     res = []
     for url in urls:
-        # try:
-        #
-        # except:
-        #     pass
-        cap = cv2.VideoCapture(url)
-        if cap.isOpened():
-            res.append(url)
-        cap.release()
+        try:
+            cap = cv2.VideoCapture(url)
+            if cap.isOpened():
+                res.append(url)
+        except:
+            pass
+        finally:
+            cap.release()
     return res
+
+
+def add_url(url: list[str]) -> None:
+    ...
 
 
 def main():
@@ -46,6 +51,10 @@ def main():
         return
     with st.spinner("Проверка ссылок"):
         checked_urls = check_urls(urls)
-    print(1, checked_urls)
     if not checked_urls:
         st.error("Не удалось открыть ни одну ссылку")
+    else:
+        add_url(checked_urls)
+        st.success("Следующие трансляции добавлены в очередь")
+        for url in urls:
+            st.text(url)

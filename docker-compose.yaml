@@ -28,9 +28,9 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: "${RABBITMQ_USER}"
       RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
-      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648"
-    volumes:
-      - ./configs/rabbit/definitions.json:/etc/rabbitmq/definitions.json:ro
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648 max_message_size 268435456 load_definitions '/run/secrets/rabbit_config'"
+    secrets:
+      - rabbit_config
   mongodb:
     image: mongo
     container_name: mongodb_container
@@ -49,3 +49,7 @@ volumes:
     driver: local
   mongodb-log:
     driver: local
+
+secrets:
+  rabbit_config:
+    file: ./configs/rabbit/definitions.json

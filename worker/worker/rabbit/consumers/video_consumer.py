@@ -43,11 +43,11 @@ class TaskConsumer(RabbitMQConsumerBase):
         for i, frame in enumerate(frames):
             position = i * task.n_frames
             rects = self.yolo.predict_(frame)
-            if not rects:
-                continue
             if not has_image:
                 self.mongo.archives.update_one({"_id": self._entity_id},
                                                {"$set": {"image": pickle.dumps(frame)}})
+            if not rects:
+                continue
             frame = {"position": position, "rects": rects_to_dict(rects), "image": pickle.dumps(frame),
                      "arc_id": self._entity_id}
             self.mongo.frames.insert_one(frame)

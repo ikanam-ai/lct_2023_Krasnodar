@@ -4,10 +4,12 @@ from services.mongo import Mongo
 from config import Config
 from main import main as main_
 
+config = Config()
+
 
 @st.cache_resource
 def init_connection():
-    return Mongo(Config())
+    return Mongo(config)
 
 
 st.session_state.mongo_db = init_connection()
@@ -15,10 +17,10 @@ st.session_state.mongo_db = init_connection()
 authenticator = stauth.Authenticate(
     {
         'usernames': {
-            'jsmith': {
+            config.USER_LOGIN: {
                 'email': 'jsmith@gmail.com',
                 'name': 'John Smith',
-                'password': stauth.Hasher(['abc']).generate()[0]
+                'password': stauth.Hasher([config.USER_PASSWORD]).generate()[0]
             }
         }
     },

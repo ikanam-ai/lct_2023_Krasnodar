@@ -13,11 +13,12 @@ class YoloModel(YOLO):
         rectangles = []
         results: Results = self.predict(frame)
         for result in results:
+            name = ", ".join(result.names.values())
             boxes = result.boxes.cpu().numpy()
             for box in boxes:
                 borders = box.xyxy[0].tolist()
                 left, right = tuple(borders[:2]), tuple(borders[2:])
-                conf, cls = box.conf.tolist()[0], box.cls.tolist()[0]
+                conf, cls = box.conf.tolist()[0], name
                 rectangles.append(Rectangle(left=left, right=right, conf=conf, cls=cls))
 
         return rectangles

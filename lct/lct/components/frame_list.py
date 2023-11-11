@@ -19,7 +19,7 @@ def draw_rectangles_on_image(image: Image, rectangles: list[Rectangle]):
         font = ImageFont.truetype("lct/fonts/arial.ttf", fontsize)
         txt_width, txt_height = font.getsize(label)
         text_position = (rect.left[0], rect.left[1] - txt_height + 1)
-        box_position = (rect.left[0], rect.left[1] - txt_height + 4, rect.right[0] + txt_width, rect.right[1])
+        box_position = (rect.left[0], rect.left[1], rect.right[0], rect.right[1])
         draw.text(text_position, label, fill="red", font=font)
         draw.rectangle(box_position, outline="red", width=2)
 
