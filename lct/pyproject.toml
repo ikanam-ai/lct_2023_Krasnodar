@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "lct"
+version = "0.1.0"
+description = "ikanam lct"
+authors = ["zuppi <seregpax@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+start = "lct.start:start"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+streamlit = "^1.28.1"
+streamlit-antd-components = "^0.2.3"
+streamlit-authenticator = "^0.2.3"
+streamlit-webrtc = "^0.47.1"
+streamlit-img-label = "^0.1.1"
+opencv-python = "^4.8.1.78"
+pika = "^1.3.2"
+pymongo = "^4.6.0"
+pascal-voc-writer = "^0.1.4"
+pillow = "9.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
