@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  backend:
+    container_name: streamlit
+    build:
+      context: ./lct
+    env_file:
+      - .env
+    expose:
+      - 80
+    depends_on:   
+      - mongodb
+      - rabbitmq
+  worker:
+    container_name: yolo_worker
+    build:
+      context: ./worker
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+      - rabbitmq
+  rabbitmq:
+    image: rabbitmq:3.13-rc-management
+    restart: always
+    ports:
+      - 5672:5672
+    environment:
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_USER}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648"
+    volumes:
+      - ./configs/rabbit/definitions.json:/etc/rabbitmq/definitions.json:ro
+  mongodb:
+    image: mongo
+    container_name: mongodb_container
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_ROOT_DATABASE: ${MONGO_DATABASE}
+    ports:
+      - "${MONGO_PORT}:27017"
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-log:/var/log/mongodb
+
+volumes:
+  mongodb-data:
+    driver: local
+  mongodb-log:
+    driver: local

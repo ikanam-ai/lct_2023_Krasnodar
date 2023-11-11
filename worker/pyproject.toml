@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "worker"
+version = "0.1.0"
+description = "ikanam lct"
+authors = ["zuppi <seregpax@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+start = "worker.main:main"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pika = "^1.3.2"
+torch = { version = "^2.1.0+cu118", source = "pytorch" }
+ultralytics = "^8.0.207"
+torchvision = { version = "^0.16.0+cu118", source = "pytorch" }
+pillow = "^10.1.0"
+orjson = "^3.9.10"
+pymongo = "^4.6.0"
+opencv-python = "^4.8.1.78"
+requests = "^2.31.0"
+
+[[tool.poetry.source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu118"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

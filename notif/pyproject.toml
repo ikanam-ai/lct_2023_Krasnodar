@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "notif"
+version = "0.1.0"
+description = "ikanam lct"
+authors = ["zuppi <seregpax@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+start = "notif.main:main"
+example = "notif.example:main"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = {extras = ["all"], version = "^0.104.1"}
+uvicorn = "^0.24.0.post1"
+websockets = "^12.0"
+orjson = "^3.9.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
