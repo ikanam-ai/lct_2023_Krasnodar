@@ -11,17 +11,45 @@
 - **Нейронные сети**: Pytorch, YoloV8, TorchVision, Scikit-learn
 - **Визуализация аналитики**: Plotly
 - **Веб-приложение**: Streamlit
+- **Брокер сообщений**: RabbitMQ
+- **Хранение данных**: MongoDb 
 
-**Структура репозитория** # Сергей
-- cvat_extensions/: Расширения и конфигурации для интеграции с CVAT.
-- neural_networks/: Реализации нейронных сетей на основе Pytorch и YoloV8.
-- visualization/: Код для визуализации данных с использованием Plotly.
-- web_app/: Исходный код веб-приложения, разработанного с использованием Streamlit.
+**Структура репозитория**
+- worker/: Код микросервиса для распознавания архивов и rtc трансляций, внути него есть yolo модель
+- notif/: Код микросервиса для рассылки уведомлений о детектах
+- lct/: Код микросервиса для выставления задач распознавания и просмотрв результатов
 
-**Использование**  # Сергей
-- Клонируйте репозиторий: git clone https://github.com/yourusername/illegal-trade-detection.git
-- Установите зависимости: pip install -r requirements.txt
-- Запустите веб-приложение: streamlit run web_app/app.py
+**Использование**
++ 1 вариант, без docker 
+  - Клонируйте репозиторий: git clone https://github.com/yourusername/illegal-trade-detection.git
+  - Установите зависимости в каждом микросервисе: poetry install  
+  - Установить переменные окружения для rabbitMq и mongoDb
+  - Запустить каждый микросервис: poetry run start
++ 2 вариант, в docker
+  - Клонируйте репозиторий: git clone https://github.com/yourusername/illegal-trade-detection.git
+  - запустить все миикросервисы из docker-compose: docker-compose up
+    
+*Список всех переменных окружения:
+```
+MONGO_HOST: Адрес сервера MongoDB.
+MONGO_PORT: Порт сервера MongoDB (по умолчанию 27017).
+MONGO_DATABASE: Имя базы данных MongoDB.
+MONGO_USERNAME: Имя пользователя MongoDB для аутентификации.
+MONGO_PASSWORD: Пароль пользователя MongoDB для аутентификации.
+NOTIF_PORT: Порт для сервиса уведомлений.
+ADMIN_NOTIF_PSWD: Пароль для создания уведомлений.
+NOTIF_PSWD: Пароль для получения уведомлений.
+NOTIF_URL: URL сервиса уведомлений.
+RABBITMQ_HOST: Адрес сервера RabbitMQ.
+RABBITMQ_PORT: Порт сервера RabbitMQ (по умолчанию 5672).
+RABBITMQ_USER: Имя пользователя RabbitMQ для аутентификации.
+RABBITMQ_PASSWORD: Пароль пользователя RabbitMQ для аутентификации.
+RABBITMQ_VHOST: Виртуальный хост RabbitMQ.
+EXCHANGE_NAME: Имя обмена RabbitMQ для входных видео.
+DEQUE_NAME: Имя очереди RabbitMQ для входных видео.
+BINDING_KEY: Ключ привязки RabbitMQ (используется при маршрутизации сообщений).
+MODEL_PATH: Путь к файлу yolo модели.
+```
 
 **Ресурсы**
 - Наборы видеопотоков из системы "Умный город".
