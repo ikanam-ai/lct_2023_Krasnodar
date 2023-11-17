@@ -3,6 +3,7 @@ import streamlit_antd_components as sac
 from components.archive_from_history import archive_from_history
 from components.frame_list import frame_list
 from components.edit_img import edit_img
+from components.show_tracking import show_tracking
 from components.watch import watch
 from models.archive_from_history import ArchiveFromHistory
 from pymongo.collection import Collection
@@ -55,6 +56,8 @@ def back(path: str) -> callable:
 def history(collection: Collection, title: str, show_watch: bool = False):
     if st.session_state.get('frame'):
         edit_img(st.session_state.get('frame'), back("frame"), save, mark_fake)
+    elif st.session_state.get('track'):
+        show_tracking(st.session_state.get('track'))
     elif st.session_state.get('arc'):
         arc = st.session_state.get('arc')
         frame_list(arc._id, arc.title, back("arc"))

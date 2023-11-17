@@ -1,10 +1,8 @@
 import pickle
 
 import streamlit as st
-from PIL import ImageDraw, Image, ImageFont
-from models.archive_from_history import ArchiveFromHistory
+from PIL import Image
 from models.frame import Frame
-from models.rectangle import Rectangle
 from pymongo.collection import Collection
 import streamlit_antd_components as sac
 
@@ -35,13 +33,26 @@ def show_pages(id_, f_key: str = "arc_id"):
         skip = int((page - 1) * page_size)
         cols_count = 2
         cols = st.columns(cols_count)
-        for i, frame in enumerate(frames.find({f_key: id_}).limit(page_size).skip(skip)):
+        frames_ = list(frames.find({f_key: id_}).limit(page_size).skip(skip))
+        for i, frame in enumerate(frames_):
             draw_frame(cols[i % cols_count], Frame(**frame))
+
+
+def track(id_):
+    def inner():
+        st.session_state['track'] = id_
+        st.session_state['arc'] = None
+
+    return inner
 
 
 def frame_list(id_, title: str, back: callable, f_key: str = "arc_id") -> None:
     with st.container():
-        st.button("Назад", on_click=back, key=f"back_{title}")
+        cols = st.columns(2)
+        cols[0].button("Назад", on_click=back, key=f"back_{title}")
+        cols[1].button(f"Трекинг", key=f"btn_track_{id_}",
+                       on_click=track(id_),
+                       use_container_width=True)
         st.text(title)
 
         show_pages(id_, f_key)

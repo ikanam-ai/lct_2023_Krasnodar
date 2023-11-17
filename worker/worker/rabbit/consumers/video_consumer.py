@@ -1,6 +1,7 @@
 import pickle
 from datetime import datetime
 
+from numpy import ndarray
 from pika import BasicProperties
 from pika.adapters.blocking_connection import BlockingChannel
 from pika.spec import Basic
@@ -33,42 +34,44 @@ class TaskConsumer(RabbitMQConsumerBase):
         else:
             self._process_rtc(task, frames)
 
-    def _process_video(self, task: Task, frames):
+    def _process_video(self, task: Task, frames: list[tuple[ndarray, ndarray]]):
         self._entity_id = self.mongo.archives.insert_one(
             {"title": task.title, "n_frames": task.n_frames, "ratio": task.ratio,
              'completed': False, "type": task.type,
              "created_at": datetime.now().timestamp()}).inserted_id
         has_image = False
         for i, frame in enumerate(frames):
+            frame, color_frame = frame
             position = i * task.n_frames
             rects = self.yolo.predict_(frame)
             if not has_image:
                 self.mongo.archives.update_one({"_id": self._entity_id},
-                                               {"$set": {"image": pickle.dumps(frame)}})
+                                               {"$set": {"image": pickle.dumps(color_frame)}})
             if not rects:
                 continue
-            frame = {"position": position, "rects": rects_to_dict(rects), "image": pickle.dumps(frame),
+            frame = {"position": position, "rects": rects_to_dict(rects), "image": pickle.dumps(color_frame),
                      "arc_id": self._entity_id}
             self.mongo.frames.insert_one(frame)
             has_image = True
         self.mongo.archives.update_one({"_id": self._entity_id},
                                        {"$set": {"completed": True}})
 
-    def _process_rtc(self, task: Task, frames):
+    def _process_rtc(self, task: Task, frames: list[tuple[ndarray, ndarray]]):
         self._entity_id = self.mongo.rtc.insert_one(
             {"title": task.title, "n_frames": task.n_frames, "ratio": task.ratio, "url": task.url,
              'completed': False, "type": task.type, "created_at": datetime.now().timestamp()}).inserted_id
         has_image = False
         for i, frame in enumerate(frames):
+            frame, color_frame = frame
             if not has_image:
                 self.mongo.rtc.update_one({"_id": self._entity_id},
-                                          {"$set": {"image": pickle.dumps(frame)}})
+                                          {"$set": {"image": pickle.dumps(color_frame)}})
             rects = self.yolo.predict_(frame)
             time = datetime.now().timestamp()
             if not rects:
                 continue
             frame = {"time": time, "rects": rects_to_dict(rects), "arc_id": self._entity_id,
-                     "image": pickle.dumps(frame)}
+                     "image": pickle.dumps(color_frame)}
             self.mongo.frames.insert_one(frame)
             has_image = True
         self.mongo.archives.update_one({"_id": self._entity_id},

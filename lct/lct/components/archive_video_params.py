@@ -11,7 +11,7 @@ def archive_video_params(img: ndarray, name: str) -> tuple[float, float, int]:
         cols = st.columns(2)
         cols[0].image(img)
         cols[1].text(name)
-        storage['threshold'] = cols[1].slider("Threshold", 0.0, 1.0, 0.5, 0.05, key=f"{name}_Threshold")
+        storage['threshold'] = cols[1].slider("Threshold", 0.0, 1.0, 1, 0.05, key=f"{name}_Threshold")
         storage['n_frames'] = cols[1].slider("Распознавать каждый n кадр", 1, 100, 10, 1, key=f"{name}_n_frames")
         res_cols = cols[1].columns(2)
         default_res = (0.1, 0.25, 0.5, 0.75, 1)

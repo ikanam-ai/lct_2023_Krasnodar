@@ -2,8 +2,8 @@ import pickle
 from datetime import datetime
 
 import streamlit as st
+
 from models.archive_from_history import ArchiveFromHistory
-from pymongo.collection import Collection
 
 
 def archive_from_history(data: ArchiveFromHistory, forward: callable, watch: None = None) -> bool:

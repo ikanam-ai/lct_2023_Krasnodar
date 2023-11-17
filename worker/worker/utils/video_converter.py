@@ -18,9 +18,10 @@ def open_video(task: Task) -> cv2.VideoCapture:
     return cv2.VideoCapture(task.data)
 
 
-def convert_video(video: cv2.VideoCapture, n_frames: int, ratio: float) -> Iterable[ndarray]:
+def convert_video(video: cv2.VideoCapture, n_frames: int, ratio: float) -> Iterable[tuple[ndarray, ndarray]]:
     frame_count = 0
     while True:
+        frame_count += 1
         ret, frame = video.read()
         if not ret:
             break
@@ -29,8 +30,7 @@ def convert_video(video: cv2.VideoCapture, n_frames: int, ratio: float) -> Itera
         if ratio != 1:
             size = (int(frame.shape[1] * ratio), int(frame.shape[0] * ratio))
             frame = cv2.resize(frame, size)
-        frame_count += 1
-        yield cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        yield frame, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     video.release()
 

@@ -1,13 +1,13 @@
 import pickle
+import time
 
 import streamlit as st
 import streamlit_antd_components as sac
 from PIL import Image
-
-from models.frame import Frame
-from components.edit_img import edit_img
 from pymongo.collection import Collection
 
+from components.edit_img import edit_img
+from models.frame import Frame
 from utils.draw_recs_on_img import draw_rectangles_on_image
 from utils.frames_to_arc import frames_to_arc
 
@@ -40,18 +40,29 @@ def download(frames: list[Frame]):
     return open(arc_path, "rb")
 
 
+def teach():
+    col: Collection = st.session_state.mongo_db.models_collection
+    teach: Collection = st.session_state.mongo_db.teach_collection
+    frames = [str(frame._id) for frame in teach.find({})]
+    t = time.time()
+    col.insert_one({"name": f"retrained_{t}", "time": t, "frames": frames, "selected": False})
+    st.toast("Модель будет дообучена на текущих данных, изменить базовую модель можно в настройках")
+
+
 def show_list():
     st.title("Датасет для дообучения")
     teach: Collection = st.session_state.mongo_db.teach_collection
     total = teach.count_documents({})
     if total == 0:
         st.subheader("Тут пока ничего нет"),
+        st.text("Добавьте кадры для дообучения модели")
     else:
         st.subheader("Кадры можно отредактировать, а затем экспортировать в формате для обучения yolo v8")
         cols = st.columns(2)
         frames = []
         btn_place = cols[0]
-        cols[1].text(f"Изображений на странице: {total}")
+        cols[1].button("Дообучить модель не текущих данных", use_container_width=True, key="reteach_btn",
+                       on_click=teach)
         cols = st.columns(2)
         page_size = 30
         page = sac.pagination(total=total, align='center', jump=True, show_total=True, page_size=page_size)

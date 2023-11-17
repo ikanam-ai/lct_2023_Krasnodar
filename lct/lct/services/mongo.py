@@ -1,3 +1,5 @@
+import time
+
 from config import Config
 from pymongo import MongoClient
 from pymongo.collection import Collection
@@ -13,6 +15,8 @@ class Mongo:
             username=config.MONGO_USERNAME,
             password=config.MONGO_PASSWORD,
         )
+        if not self.models_collection.find_one({"name": "base"}):
+            self.models_collection.insert_one({"name": f"base", "time": time.time(), "frames": [], "selected": True})
 
     @property
     def archives_collection(self) -> Collection:
@@ -34,7 +38,11 @@ class Mongo:
     def frames_collection(self) -> Collection:
         return self.client[self.config.MONGO_DATABASE]['frames']
 
+    @property
+    def models_collection(self) -> Collection:
+        return self.client[self.config.MONGO_DATABASE]['models']
+
     def _clear_all(self):
         for col in (self.archives_collection, self.users_collection, self.rtc_collection, self.teach_collection,
-                    self.frames_collection):
+                    self.frames_collection, self.models_collection):
             col.delete_many({})
