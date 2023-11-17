@@ -1,9 +1,10 @@
 import asyncio
 import websockets
+from .config import PORT, NOTIF_PSWD
 
 
 async def read_messages():
-    uri = "ws://localhost:8094/notif/HELLO"
+    uri = fr"ws://localhost:{PORT}/notif/{NOTIF_PSWD}"
 
     async with websockets.connect(uri) as websocket:
         while True:

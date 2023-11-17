@@ -11,4 +11,5 @@ class ArchiveFromHistory:
     type: str
     created_at: int
     _id: str | int
-    image: bytes = None
+    url: str | None = None
+    image: bytes | None = None

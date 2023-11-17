@@ -8,22 +8,7 @@ from models.rectangle import Rectangle
 from pymongo.collection import Collection
 import streamlit_antd_components as sac
 
-
-def draw_rectangles_on_image(image: Image, rectangles: list[Rectangle]):
-    image = image.copy()
-    draw = ImageDraw.Draw(image)
-    for rect in rectangles:
-        rect = Rectangle(**rect)
-        label = f"Класс: {rect.cls}, Коэф: {rect.conf:.2f}"
-        fontsize = max(round(max(image.size) / 40), 12)
-        font = ImageFont.truetype("lct/fonts/arial.ttf", fontsize)
-        txt_width, txt_height = font.getsize(label)
-        text_position = (rect.left[0], rect.left[1] - txt_height + 1)
-        box_position = (rect.left[0], rect.left[1], rect.right[0], rect.right[1])
-        draw.text(text_position, label, fill="red", font=font)
-        draw.rectangle(box_position, outline="red", width=2)
-
-    return image
+from utils.draw_recs_on_img import draw_rectangles_on_image
 
 
 def edit_image(frame: Frame, img: Image):
@@ -57,6 +42,6 @@ def show_pages(id_, f_key: str = "arc_id"):
 def frame_list(id_, title: str, back: callable, f_key: str = "arc_id") -> None:
     with st.container():
         st.button("Назад", on_click=back, key=f"back_{title}")
-        st.title(title)
+        st.text(title)
 
         show_pages(id_, f_key)

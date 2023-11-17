@@ -17,6 +17,7 @@ ENV NOTIF_URL=""
 ENV NOTIF_PSWD=""
 ENV STREAMLIT_PORT=7484
 
+RUN apt-get -y update && apt-get -y upgrade && apt-get install -y ffmpeg
 RUN pip install poetry
 WORKDIR /app
 COPY pyproject.toml poetry.lock /app/

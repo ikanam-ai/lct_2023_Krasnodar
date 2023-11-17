@@ -38,7 +38,7 @@ def convert_to_rects(rects: list[dict], orig: Frame):
     } for rect, or_rec in zip(rects, orig.rects)]
 
 
-def edit_img(frame_: tuple[Frame, Image, dict], back: callable, save: callable, fake: callable) -> None:
+def edit_img(frame_: tuple[Frame, Image, dict | None], back: callable, save: callable, fake: callable = None) -> None:
     frame, img, _ = frame_
     st.button("Назад", on_click=back, key=f"back_edit_{frame.position}")
     st.title("Редактирование распознавания")
@@ -50,13 +50,28 @@ def edit_img(frame_: tuple[Frame, Image, dict], back: callable, save: callable, 
     rects = st_img_label(resized_img, box_color="red", rects=resized_rects)
 
     if not rects:
+        btn_cols = st.columns(2)
+        btn_cols[0].button(label="Сохранить", on_click=lambda: save(convert_to_rects([], frame)),
+                           use_container_width=True)
+
+        if fake:
+            def inner_fake():
+                print(len(st.session_state.get('frame')))
+                frame, img, arc = st.session_state.get('frame')
+                frame.rects = []
+                st.session_state.__setitem__('frame', (frame, img, arc))
+                fake()
+
+            btn_cols[1].button(label="Использовать для обучения", on_click=inner_fake, use_container_width=True)
+
         return
     try:
         preview_imgs = im.init_annotation(rects)
         btn_cols = st.columns(2)
         btn_cols[0].button(label="Сохранить", on_click=lambda: save(convert_to_rects(im._current_rects, frame)),
                            use_container_width=True)
-        btn_cols[1].button(label="Ложное срабатывание", on_click=fake, use_container_width=True)
+        if fake:
+            btn_cols[1].button(label="Использовать для обучения", on_click=fake, use_container_width=True)
         for i, prev_img in enumerate(preview_imgs):
             prev_img[0].thumbnail((200, 200))
             cols = st.columns(2)

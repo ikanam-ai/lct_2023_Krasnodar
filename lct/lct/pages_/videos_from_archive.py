@@ -1,4 +1,5 @@
 import os
+import shutil
 import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
@@ -10,14 +11,14 @@ from send import send_videos_to_queue
 def main():
     user = st.session_state['username']
     st.title("Распознование из архива")
-    uploaded_file: UploadedFile | None = st.file_uploader("Загрузите zip архив с видео", type=["zip"])
+    uploaded_file: UploadedFile | None = st.file_uploader("Загрузите zip архив с видео", type=["zip", "mp4"])
     submit_btn = st.columns(3)
-
+    temp_folder = f"temp_videos/{user}"
     if uploaded_file is None:
         return
 
     with st.spinner("Идет загрузка и обработка архива..."):
-        temp_folder = f"temp_videos/{user}"
+        shutil.rmtree(temp_folder, ignore_errors=True)
         extract_videos(uploaded_file, temp_folder)
         st.subheader("Настройка распознавания")
         video_files = os.listdir(temp_folder)

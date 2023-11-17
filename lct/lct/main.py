@@ -15,6 +15,7 @@ def main() -> None:
             size='middle',
             format_func=lambda page: pages[page].title,
         )
+
         st.sidebar.info("Made with ❤ by the ikanam")
 
     with st.container():

@@ -10,3 +10,4 @@ class Task:
     threshold: float
     type: Literal["video", "rtc"]
     ratio: float = 0.5
+    url: str | None = None

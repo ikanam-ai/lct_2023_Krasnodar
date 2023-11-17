@@ -31,7 +31,6 @@ class TaskConsumer(RabbitMQConsumerBase):
         if task.type == "video":
             self._process_video(task, frames)
         else:
-            channel.basic_ack(delivery_tag=method.delivery_tag)
             self._process_rtc(task, frames)
 
     def _process_video(self, task: Task, frames):
@@ -57,15 +56,21 @@ class TaskConsumer(RabbitMQConsumerBase):
 
     def _process_rtc(self, task: Task, frames):
         self._entity_id = self.mongo.rtc.insert_one(
-            {"title": task.title, "n_frames": task.n_frames, "ratio": task.ratio,
-             'completed': False, "type": task.type}).inserted_id
+            {"title": task.title, "n_frames": task.n_frames, "ratio": task.ratio, "url": task.url,
+             'completed': False, "type": task.type, "created_at": datetime.now().timestamp()}).inserted_id
+        has_image = False
         for i, frame in enumerate(frames):
+            if not has_image:
+                self.mongo.rtc.update_one({"_id": self._entity_id},
+                                          {"$set": {"image": pickle.dumps(frame)}})
             rects = self.yolo.predict_(frame)
             time = datetime.now().timestamp()
             if not rects:
                 continue
-            frame = {"time": time, "rects": rects_to_dict(rects), "arc_id": self._entity_id}
+            frame = {"time": time, "rects": rects_to_dict(rects), "arc_id": self._entity_id,
+                     "image": pickle.dumps(frame)}
             self.mongo.frames.insert_one(frame)
+            has_image = True
         self.mongo.archives.update_one({"_id": self._entity_id},
                                        {"$set": {"completed": True}})
 

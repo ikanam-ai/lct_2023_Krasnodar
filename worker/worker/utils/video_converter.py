@@ -24,12 +24,13 @@ def convert_video(video: cv2.VideoCapture, n_frames: int, ratio: float) -> Itera
         ret, frame = video.read()
         if not ret:
             break
+        if frame_count % n_frames != 0:
+            continue
         if ratio != 1:
             size = (int(frame.shape[1] * ratio), int(frame.shape[0] * ratio))
             frame = cv2.resize(frame, size)
         frame_count += 1
-        if frame_count % n_frames == 0:
-            yield frame
+        yield cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     video.release()
 

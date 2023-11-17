@@ -6,9 +6,9 @@ services:
       context: ./lct
     env_file:
       - .env
-    expose:
-      - 80
-    depends_on:   
+    ports:
+      - "${STREAMLIT_PORT}:${STREAMLIT_PORT}"
+    depends_on:
       - mongodb
       - rabbitmq
   worker:
